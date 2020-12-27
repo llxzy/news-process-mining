@@ -3,6 +3,7 @@ from nltk import tokenize
 import pandas as pd
 import csv
 import os
+import sys
 
 """
 some of the articles were longer than the default field size
@@ -81,11 +82,12 @@ def get_data_allnews(fname: str, default_chunk_size: int=2048) -> str:
     return output_fname
     
 
-def main(fname: str):
+def main():
+    fname = sys.argv[1]
     print(f"Processing data at '{fname}'")
     out_file = get_data_allnews(fname)
-    print(f"Created output at '{out_file}'")
+    print(f"\nDone. Created output at '{out_file}'")
 
 
 if __name__ == "__main__":
-    main("all-the-news-900k.csv")
+    main()
