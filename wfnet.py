@@ -12,7 +12,7 @@ def load_frame(fname: str) -> pd.DataFrame:
     return df.sort_values('date')
 
 
-def df_by_publisher(dataframe: pd.DataFrame):
+def df_by_publisher(dataframe: pd.DataFrame) -> None:
     publishers = set(dataframe['publication'].to_list())
     if not os.path.exists("images"):
         os.mkdir("images")
@@ -24,7 +24,7 @@ def df_by_publisher(dataframe: pd.DataFrame):
         save_dfg(frame, path)
 
 
-def df_entire(dataframe: pd.DataFrame):
+def df_entire(dataframe: pd.DataFrame) -> None:
     print("Processing: Entire dataset")
     frame = pm4py.format_dataframe(dataframe, case_id='publication', timestamp_key='date', activity_key='score')
     if not os.path.exists("images"):
@@ -33,12 +33,12 @@ def df_entire(dataframe: pd.DataFrame):
     save_dfg(frame, path)
 
 
-def save_dfg(dataframe: pd.DataFrame, out_path: str):
+def save_dfg(dataframe: pd.DataFrame, out_path: str) -> None:
     graph, start_act, end_act = pm4py.discover_dfg(dataframe)
     pm4py.save_vis_dfg(graph, start_act, end_act, out_path)
     
 
-def view_output(dataframe: pd.DataFrame):
+def view_output(dataframe: pd.DataFrame) -> None:
     dfg, start, end = pm4py.discover_dfg(dataframe)
     pm4py.view_dfg(dfg, start, end)
 
