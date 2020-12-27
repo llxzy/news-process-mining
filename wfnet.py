@@ -12,24 +12,23 @@ def load_frame(fname: str) -> pd.DataFrame:
     return df.sort_values('date')
 
 
-def df_by_publisher(dataframe: pd.DataFrame) -> None:
-    publishers = set(dataframe['publication'].to_list())
+def process_dataframe(dataframe: pd.DataFrame, partial: bool = True) -> None:
     if not os.path.exists("images"):
         os.mkdir("images")
+    print("Processing: Entire dataset")
+    df_to_image(dataframe, "images/total.png")
+    if not partial:
+        return
+    publishers = set(dataframe['publication'].to_list())
     for publisher in publishers:
         print(f"Processing: {publisher}")
         frame = dataframe[dataframe['publication'] == publisher]
-        frame = pm4py.format_dataframe(frame, case_id='publication', timestamp_key='date', activity_key='score')
         path = f"images/{publisher}.png"
-        save_dfg(frame, path)
+        df_to_image(frame, path)
 
 
-def df_entire(dataframe: pd.DataFrame) -> None:
-    print("Processing: Entire dataset")
+def df_to_image(dataframe: pd.DataFrame, path: str) -> None:
     frame = pm4py.format_dataframe(dataframe, case_id='publication', timestamp_key='date', activity_key='score')
-    if not os.path.exists("images"):
-        os.mkdir("images")
-    path = f"images/total.png"
     save_dfg(frame, path)
 
 
@@ -44,10 +43,7 @@ def view_output(dataframe: pd.DataFrame) -> None:
 
 
 def main():
-    dataframe = load_frame(sys.argv[1])
-    
-    df_by_publisher(dataframe)
-    df_entire(dataframe)
+    process_dataframe(load_frame(sys.argv[1]))
     print("\nDone. Output available at './images'")
 
 
