@@ -12,13 +12,17 @@ def load_frame(fname: str) -> pd.DataFrame:
     return df.sort_values('date')
 
 
-def process_dataframe(dataframe: pd.DataFrame, partial: bool = True) -> None:
+def process_dataframe(dataframe: pd.DataFrame) -> None:
+    """
+    First generates the dfg for the entire dataset
+    Then calls process_by_type which creates outputs for magazines and newspapers
+    and then for each of the publishers separately
+    """
     if not os.path.exists("images"):
         os.mkdir("images")
     print("Processing: Entire dataset")
     df_to_image(dataframe, "images/total.png")
-    if not partial:
-        return
+    process_by_type(dataframe)
     publishers = set(dataframe['publication'].to_list())
     for publisher in publishers:
         print(f"Processing: {publisher}")
@@ -26,6 +30,23 @@ def process_dataframe(dataframe: pd.DataFrame, partial: bool = True) -> None:
         path = f"images/{publisher}.png"
         df_to_image(frame, path)
 
+
+def process_by_type(dataframe: pd.DataFrame) -> None:
+    """
+    Split the source publications into daily newspapers and magazines
+    and generated a separate dfg for each
+    """
+    magazines = ["Gizmodo", "Hyperallergic", "Mashable", "New Republic", "New Yorker",
+                 "People", "Refinery 29", "TMZ", "TechCrunch", "The Verge", "Vice", "Wired"]
+    magazine_path = f"images/magazines.png"
+    news_path = f"images/news.png"
+    magazine_frame = dataframe[dataframe['publication'].isin(magazines)]
+    news_frame = dataframe[~dataframe['publication'].isin(magazines)]
+    print("Processing: magazines")
+    df_to_image(magazine_frame, magazine_path)
+    print("Processing: newspapers")
+    df_to_image(news_frame, news_path)
+    
 
 def df_to_image(dataframe: pd.DataFrame, path: str) -> None:
     frame = pm4py.format_dataframe(dataframe, case_id='publication', timestamp_key='date', activity_key='score')
